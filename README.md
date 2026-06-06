@@ -1,1 +1,548 @@
-# halla-tu-promedio
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Calificación Final </title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --card: #ffffff;
+      --primary: #1d4ed8;
+      --primary-dark: #1e40af;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --good: #15803d;
+      --bad: #b91c1c;
+      --warning: #b45309;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #e0ecff, #f8fafc);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #0f172a;
+      font-size: 32px;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .formula {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      padding: 14px;
+      border-radius: 12px;
+      margin: 16px auto 0;
+      max-width: 700px;
+      font-weight: bold;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      border: 1px solid #e5e7eb;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 23px;
+      color: #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag {
+      font-size: 14px;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 6px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 16px;
+      outline: none;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .note-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .summary {
+      margin-top: 18px;
+      background: #f8fafc;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .summary p {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin: 24px 0;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      padding: 13px 22px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .result-card {
+      display: none;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      border: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    .final-grade {
+      font-size: 56px;
+      font-weight: bold;
+      margin: 12px 0;
+      color: var(--primary);
+    }
+
+    .status {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .approved {
+      background: #dcfce7;
+      color: var(--good);
+    }
+
+    .failed {
+      background: #fee2e2;
+      color: var(--bad);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .detail {
+      background: #f8fafc;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .detail strong {
+      display: block;
+      font-size: 20px;
+      margin-top: 6px;
+    }
+
+    .error {
+      display: none;
+      margin: 18px 0;
+      padding: 14px;
+      border-radius: 12px;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 800px) {
+      .grid,
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .inputs {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 26px;
+      }
+
+      .final-grade {
+        font-size: 46px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Calculadora de Calificación Final</h1>
+      <p>Ingresa tus notas de la parte teórica y de talleres/laboratorio.</p>
+      <div class="formula">
+        Nota Final = Promedio Teórico × 40% + Promedio de Talleres × 60%
+      </div>
+    </header>
+
+    <main>
+      <section class="grid">
+        <div class="card">
+          <h2>Parte Teórica <span class="tag">40%</span></h2>
+
+          <label for="numTeoria">Cantidad de notas teóricas</label>
+          <select id="numTeoria" onchange="generarInputs('teoria')">
+            <option value="1">1 nota</option>
+            <option value="2">2 notas</option>
+            <option value="3">3 notas</option>
+            <option value="4" selected>4 notas</option>
+          </select>
+
+          <div id="inputsTeoria" class="inputs"></div>
+
+          <div class="summary">
+            <p>Promedio teórico: <strong id="promTeoriaVista">0.00</strong></p>
+            <p>Aporte al final: <strong id="aporteTeoriaVista">0.00</strong></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Talleres / Laboratorio <span class="tag">60%</span></h2>
+
+          <label for="numTaller">Cantidad de notas de talleres</label>
+          <select id="numTaller" onchange="generarInputs('taller')">
+            <option value="1">1 nota</option>
+            <option value="2">2 notas</option>
+            <option value="3">3 notas</option>
+            <option value="4">4 notas</option>
+            <option value="5">5 notas</option>
+            <option value="6">6 notas</option>
+            <option value="7">7 notas</option>
+            <option value="8" selected>8 notas</option>
+          </select>
+
+          <div id="inputsTaller" class="inputs"></div>
+
+          <div class="summary">
+            <p>Promedio talleres: <strong id="promTallerVista">0.00</strong></p>
+            <p>Aporte al final: <strong id="aporteTallerVista">0.00</strong></p>
+          </div>
+        </div>
+      </section>
+
+      <div id="error" class="error"></div>
+
+      <div class="actions">
+        <button class="btn-primary" onclick="calcularFinal()">Calcular nota final</button>
+        <button class="btn-secondary" onclick="limpiarTodo()">Limpiar notas</button>
+      </div>
+
+      <section id="resultado" class="result-card">
+        <h2>Resultado final</h2>
+        <div id="notaFinal" class="final-grade">0.00</div>
+        <div id="estado" class="status"></div>
+
+        <div class="detail-grid">
+          <div class="detail">
+            Promedio teórico
+            <strong id="detalleTeoria">0.00</strong>
+          </div>
+          <div class="detail">
+            Promedio talleres
+            <strong id="detalleTaller">0.00</strong>
+          </div>
+          <div class="detail">
+            Nota final ponderada
+            <strong id="detalleFinal">0.00</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Rango válido de notas: 0 a 20. ELABORADO POR: ARCE GARCIA MAXH RENATO +51 941362114 maxh.arce@tecsup.edu.pe
+    </footer>
+  </div>
+
+  <script>
+    function generarInputs(tipo) {
+      const cantidad = tipo === 'teoria'
+        ? Number(document.getElementById('numTeoria').value)
+        : Number(document.getElementById('numTaller').value);
+
+      const contenedor = tipo === 'teoria'
+        ? document.getElementById('inputsTeoria')
+        : document.getElementById('inputsTaller');
+
+      const nombre = tipo === 'teoria' ? 'Teórica' : 'Taller';
+
+      contenedor.innerHTML = '';
+
+      for (let i = 1; i <= cantidad; i++) {
+        const box = document.createElement('div');
+        box.className = 'note-box';
+
+        box.innerHTML = `
+          <label for="${tipo}${i}">Nota ${nombre} ${i}</label>
+          <input
+            type="number"
+            id="${tipo}${i}"
+            min="0"
+            max="20"
+            step="0.01"
+            placeholder="0 - 20"
+            oninput="calcularEnVivo()"
+          />
+        `;
+
+        contenedor.appendChild(box);
+      }
+
+      calcularEnVivo();
+    }
+
+    function obtenerNotas(tipo) {
+      const cantidad = tipo === 'teoria'
+        ? Number(document.getElementById('numTeoria').value)
+        : Number(document.getElementById('numTaller').value);
+
+      const notas = [];
+
+      for (let i = 1; i <= cantidad; i++) {
+        const input = document.getElementById(`${tipo}${i}`);
+        const valorTexto = input.value.trim();
+
+        if (valorTexto === '') {
+          return { error: `Falta ingresar la nota ${i} de ${tipo === 'teoria' ? 'la parte teórica' : 'talleres/laboratorio'}.` };
+        }
+
+        const valor = Number(valorTexto);
+
+        if (Number.isNaN(valor) || valor < 0 || valor > 20) {
+          return { error: `La nota ${i} de ${tipo === 'teoria' ? 'la parte teórica' : 'talleres/laboratorio'} debe estar entre 0 y 20.` };
+        }
+
+        notas.push(valor);
+      }
+
+      return { notas };
+    }
+
+    function promedio(lista) {
+      if (lista.length === 0) return 0;
+      const suma = lista.reduce((acc, n) => acc + n, 0);
+      return suma / lista.length;
+    }
+
+    function mostrarError(mensaje) {
+      const error = document.getElementById('error');
+      error.textContent = mensaje;
+      error.style.display = 'block';
+    }
+
+    function ocultarError() {
+      const error = document.getElementById('error');
+      error.textContent = '';
+      error.style.display = 'none';
+    }
+
+    function calcularEnVivo() {
+      const teoria = leerNotasParciales('teoria');
+      const taller = leerNotasParciales('taller');
+
+      const promTeoria = promedio(teoria);
+      const promTaller = promedio(taller);
+
+      document.getElementById('promTeoriaVista').textContent = promTeoria.toFixed(2);
+      document.getElementById('aporteTeoriaVista').textContent = (promTeoria * 0.40).toFixed(2);
+
+      document.getElementById('promTallerVista').textContent = promTaller.toFixed(2);
+      document.getElementById('aporteTallerVista').textContent = (promTaller * 0.60).toFixed(2);
+    }
+
+    function leerNotasParciales(tipo) {
+      const cantidad = tipo === 'teoria'
+        ? Number(document.getElementById('numTeoria').value)
+        : Number(document.getElementById('numTaller').value);
+
+      const notas = [];
+
+      for (let i = 1; i <= cantidad; i++) {
+        const input = document.getElementById(`${tipo}${i}`);
+        if (!input) continue;
+
+        const valor = Number(input.value);
+
+        if (!Number.isNaN(valor) && input.value.trim() !== '' && valor >= 0 && valor <= 20) {
+          notas.push(valor);
+        }
+      }
+
+      return notas;
+    }
+
+    function calcularFinal() {
+      ocultarError();
+
+      const datosTeoria = obtenerNotas('teoria');
+      if (datosTeoria.error) {
+        mostrarError(datosTeoria.error);
+        document.getElementById('resultado').style.display = 'none';
+        return;
+      }
+
+      const datosTaller = obtenerNotas('taller');
+      if (datosTaller.error) {
+        mostrarError(datosTaller.error);
+        document.getElementById('resultado').style.display = 'none';
+        return;
+      }
+
+      const promTeoria = promedio(datosTeoria.notas);
+      const promTaller = promedio(datosTaller.notas);
+      const notaFinal = (promTeoria * 0.40) + (promTaller * 0.60);
+
+      document.getElementById('promTeoriaVista').textContent = promTeoria.toFixed(2);
+      document.getElementById('aporteTeoriaVista').textContent = (promTeoria * 0.40).toFixed(2);
+
+      document.getElementById('promTallerVista').textContent = promTaller.toFixed(2);
+      document.getElementById('aporteTallerVista').textContent = (promTaller * 0.60).toFixed(2);
+
+      document.getElementById('notaFinal').textContent = notaFinal.toFixed(2);
+      document.getElementById('detalleTeoria').textContent = promTeoria.toFixed(2);
+      document.getElementById('detalleTaller').textContent = promTaller.toFixed(2);
+      document.getElementById('detalleFinal').textContent = notaFinal.toFixed(2);
+
+      const estado = document.getElementById('estado');
+      if (notaFinal >= 12.50) {
+        estado.textContent = 'APROBADO';
+        estado.className = 'status approved';
+      } else {
+        estado.textContent = 'DESAPROBADO';
+        estado.className = 'status failed';
+      }
+
+      document.getElementById('resultado').style.display = 'block';
+    }
+
+    function limpiarTodo() {
+      ocultarError();
+
+      document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.value = '';
+      });
+
+      document.getElementById('resultado').style.display = 'none';
+
+      document.getElementById('promTeoriaVista').textContent = '0.00';
+      document.getElementById('aporteTeoriaVista').textContent = '0.00';
+      document.getElementById('promTallerVista').textContent = '0.00';
+      document.getElementById('aporteTallerVista').textContent = '0.00';
+    }
+
+    generarInputs('teoria');
+    generarInputs('taller');
+  </script>
+</body>
+</html>
